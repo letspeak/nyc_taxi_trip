@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: SSAHA
+Class-Path: .
+Main-Class: com.san.nyc.manager.DownloadManager
