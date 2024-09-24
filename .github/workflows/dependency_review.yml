@@ -1,0 +1,36 @@
+name: 'Dependency Review'
+on: #[pull_request]
+  push: 
+    branches: master
+  
+permissions:
+  contents: write
+
+
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+        
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: low
+          deny-licenses: LGPL-2.0, BSD-2-Clause
+          fail-on-scopes: development
+          base-ref: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          head-ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          
+      - name: Show Review Results
+        run: |
+          echo "Licenses Denied: ${{ steps.dependency-review.outputs.licenses_denied }}"
+          echo "Vulnerabilities: ${{ steps.dependency-review.outputs.vulnerabilities }}"
+      
+      - name: 'Report'
+        if: ${{ failure() }}
+        run: |
+          echo "Review failed. Licenses Denied: ${{ steps.dependency-review.outputs.licenses_denied }}"
+          echo "Vulnerabilities: ${{ steps.dependency-review.outputs.vulnerabilities }}"`
